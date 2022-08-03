@@ -250,26 +250,28 @@ firstyear_clean=ggplot()+
   geom_sf(data = OlgaUD, fill = NA) +
   geom_sf(data = MimiUD, fill = NA) +
   geom_point(data=sleep_per_YEAR$`2015`[-which(sleep_per_YEAR$`2015`$Number_GPS_Points==0 &sleep_per_YEAR$`2015`$overnight_GPS_error>=50),], aes(x=Re(Sleep_centroid), y=Im(Sleep_centroid), color= tag))+
-  scale_color_brewer(palette = "Paired")+
+  scale_color_brewer(palette = "Paired",labels = c("Ibeth", "Mimi", "Olga"))+
   theme_classic()+
-  labs(x = "Re ",
-       y = "Im")
+  labs(x = " ",
+       y = "",
+       color = "individual")
 
 
 
 secondyear_clean=ggplot()+
-  # ggmap(studysite)+
-  # coord_sf(xlim = c(30, 32.5),
-  #          crs = st_crs(4326)) +
+  #ggmap(studysite)+
+  #coord_sf(xlim = c(30, 32.5),
+    #       crs = st_crs(4326)) +
   geom_sf(data = BobUD,fill = NA) +
   geom_sf(data = MartinelliUD, fill = NA) +
   geom_sf(data = NorahUD, fill = NA) +
   geom_sf(data = ValoyUD, fill = NA) +
   geom_point(data=sleep_per_YEAR$`2017`[-which(sleep_per_YEAR$`2017`$Number_GPS_Points==0 &sleep_per_YEAR$`2017`$overnight_GPS_error>=50),], aes(x=Re(Sleep_centroid), y=Im(Sleep_centroid), color= tag))+
-  scale_color_brewer(palette = "Paired")+
+  scale_color_brewer(palette = "Paired", labels = c("Bob", "Martinelli", "Norah", "Valoy"))+
   theme_classic()+
-  labs(x = "Re ",
-       y = "Im")
+  labs(x = " ",
+       y = "",
+       color = "individual")
   
 
 library(ggpubr)
