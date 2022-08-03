@@ -250,7 +250,10 @@ firstyear_clean=ggplot()+
   geom_sf(data = OlgaUD, fill = NA) +
   geom_sf(data = MimiUD, fill = NA) +
   geom_point(data=sleep_per_YEAR$`2015`[-which(sleep_per_YEAR$`2015`$Number_GPS_Points==0 &sleep_per_YEAR$`2015`$overnight_GPS_error>=50),], aes(x=Re(Sleep_centroid), y=Im(Sleep_centroid), color= tag))+
-  theme_classic()
+  scale_color_brewer(palette = "Paired")+
+  theme_classic()+
+  labs(x = "Re ",
+       y = "Im")
 
 
 
@@ -263,12 +266,16 @@ secondyear_clean=ggplot()+
   geom_sf(data = NorahUD, fill = NA) +
   geom_sf(data = ValoyUD, fill = NA) +
   geom_point(data=sleep_per_YEAR$`2017`[-which(sleep_per_YEAR$`2017`$Number_GPS_Points==0 &sleep_per_YEAR$`2017`$overnight_GPS_error>=50),], aes(x=Re(Sleep_centroid), y=Im(Sleep_centroid), color= tag))+
-  theme_classic()
+  scale_color_brewer(palette = "Paired")+
+  theme_classic()+
+  labs(x = "Re ",
+       y = "Im")
+  
 
 library(ggpubr)
 ##ggarrange lets us make a multipanel plot
 ggarrange(firstyear,secondyear) #with bad
-ggarrange(firstyear_clean,secondyear_clean) #without bad
+ggarrange(firstyear_clean,secondyear_clean, labels = c('2015', '2017'), label.args = list(gp = grid::gpar(font = 4, cex = 1.2))) #without bad
 
 
 #saving the overlap data 
