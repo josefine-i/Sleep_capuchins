@@ -1,8 +1,14 @@
 ####OVERLAP ZONES HYPOTHESIS
+library(rstan)
+library(brms)
+library(cmdstanr)
+library(sf)
+
+options(mc.cores = parallel::detectCores()) 
 
 ##### Correlation between home range and sleep efficency ####
 #make overlap column a factor 
-overlap_sleep_eff_model <- brm(bf(sleep_eff ~ overlap + (overlap | tag)), #see if rain and temp affect sleep eff (if temp becomes a factor take it out of the ())
+overlap_sleep_eff_model <- brm(bf(sleep_eff ~ overlap + (overlap | tag)), 
                            data = Sleep_overlap_clean[complete.cases(Sleep_overlap_clean[,c("overlap")]),],
                            save_pars = save_pars(all = TRUE),
                            iter = 2000,
@@ -11,7 +17,7 @@ overlap_sleep_eff_model <- brm(bf(sleep_eff ~ overlap + (overlap | tag)), #see i
                              prior(exponential(2), class = sd ),
                              prior(normal(0, 1), class = b )
                            ),
-                           family = Beta (link = "logit"), #because of the distribution of the rain and temp data
+                           family = Beta (link = "logit"),
                            backend = "cmdstanr",
                            control = list(max_treedepth = 10, adapt_delta = .999))
 
@@ -19,16 +25,14 @@ summary(overlap_sleep_eff_model)
 pp_check(overlap_sleep_eff_model)
 posterior_interval(overlap_sleep_eff_model)
 
-#plot the model
-conditional_effects(overlap_sleep_eff_model, spaghetti = TRUE)
-overlap_eff_plot = plot(conditional_effects(overlap_sleep_eff_model, spaghetti = TRUE),points = TRUE)[[1]] 
-#design gg plot
-overlap_eff_plot_gg = overlap_eff_plot + theme_classic() + labs(y = 'sleep efficency', x = 'inside overlapping home ranges')
-plot(overlap_eff_plot_gg)
+#plot the model and save the plot 
+overlap_eff_plot <- conditional_effects(overlap_sleep_eff_model, spaghetti = TRUE)
+plot(conditional_effects(overlap_sleep_eff_model, spaghetti = TRUE),points = TRUE)
+
 
 ################################################################################
 ####Correlation between TST and sleep sites in overlap home ranges#### 
-overlap_TST_model <- brm(bf(TST ~ overlap + (overlap | tag)), #see if rain and temp affect sleep eff (if temp becomes a factor take it out of the ())
+overlap_TST_model <- brm(bf(TST ~ overlap + (overlap | tag)), 
                    data = Sleep_overlap_clean[complete.cases(Sleep_overlap_clean[,c("overlap")]),],
                    save_pars = save_pars(all = TRUE),
                    iter = 2000,
@@ -37,50 +41,77 @@ overlap_TST_model <- brm(bf(TST ~ overlap + (overlap | tag)), #see if rain and t
                      #prior(exponential(2), class = sd ),
                      prior(normal(0, 10), class = b )
                    ),
-                   family = skew_normal, #because of the distribution of the rain and temp data
+                   family = skew_normal, 
                    backend = "cmdstanr",
                    control = list(max_treedepth = 10, adapt_delta = .999))
 summary(overlap_TST_model)
 pp_check(overlap_TST_model)
 
-#plot the model
-conditional_effects(overlap_TST_model, spaghetti = TRUE)
-TST_overlap_plot = plot(conditional_effects(overlap_TST_model, spaghetti = TRUE),points = TRUE) [[1]]
-#design gg plot
-TST_overlap_plot_gg = TST_overlap_plot + theme_classic() + labs(y = 'total sleep time', x = 'inside overlapping home ranges')
+#plot the model and save the plot 
+TST_overlap_plot <- conditional_effects(overlap_TST_model, spaghetti = TRUE)
+plot(conditional_effects(overlap_TST_model, spaghetti = TRUE),points = TRUE) 
 
 
 ################################################################################
 ####Correlation between SPT and sleep sites in overlap home ranges#### 
-overlap_SPT_model <- brm(bf(SPT ~ overlap + (overlap | tag)), #see if rain and temp affect sleep eff (if temp becomes a factor take it out of the ())
+overlap_SPT_model <- brm(bf(SPT ~ overlap + (overlap | tag)), 
                          data = Sleep_overlap_clean[complete.cases(Sleep_overlap_clean[,c("overlap")]),],
                          save_pars = save_pars(all = TRUE),
                          iter = 2000,
                          prior = c(
                            prior(student_t(3, 629, 50), class = Intercept),
-                           #prior(exponential(2), class = sd ),
-                           prior(normal(0, 10), class = b )
+                           prior(normal(0, 20), class = b )
                          ),
-                         family = skew_normal, #because of the distribution of the rain and temp data
+                         family = skew_normal, 
                          backend = "cmdstanr",
                          control = list(max_treedepth = 10, adapt_delta = .999))
 summary(overlap_SPT_model)
 pp_check(overlap_SPT_model)
 
-#plot the model
-conditional_effects(overlap_SPT_model, spaghetti = TRUE)
-SPT_overlap_plot = plot(conditional_effects(overlap_SPT_model, spaghetti = TRUE),points = TRUE) [[1]]
-#design gg plot
-SPT_overlap_plot_gg = SPT_overlap_plot + theme_classic() + labs(y = 'sleep period time', x = 'inside overlapping home ranges')
-
-#arrange model plots together
-ggarrange(overlap_eff_plot_gg, TST_overlap_plot_gg, SPT_overlap_plot_gg, nrow = 1, labels = c('a', 'b', 'c') )
+#plot the model and save the plot
+SPT_overlap_plot <- conditional_effects(overlap_SPT_model, spaghetti = TRUE)
+plot(conditional_effects(overlap_SPT_model, spaghetti = TRUE),points = TRUE)
 
 
-####Visualize the overlap####
+################################################################################
+####Visualize the correlation models ####
 library(ggplot2)
 library(RColorBrewer)
 library(ggpubr)
+
+
+#sleep_eff
+#design gg plot
+overlap_eff_plot_gg <- as.data.frame(overlap_eff_plot[[1]]) 
+over_eff_plot = ggplot()+
+  geom_point (aes(overlap, sleep_eff, color = overlap), Sleep_overlap_clean)+
+  geom_pointrange(aes(overlap, estimate__, ymin = lower__, ymax = upper__), overlap_eff_plot_gg)+
+  scale_color_brewer(palette = "Paired")+
+  theme_classic() + labs(y = 'sleep efficency', x = 'inside overlapping home ranges')
+
+
+#TST
+TST_overlap_plot_gg <- as.data.frame(TST_overlap_plot[[1]])
+over_TST_plot = ggplot()+
+  geom_point (aes(overlap, TST, color = overlap), Sleep_overlap_clean)+
+  geom_pointrange(aes(overlap, estimate__, ymin = lower__, ymax = upper__),TST_overlap_plot_gg)+
+  scale_color_brewer(palette = "Paired")+
+  theme_classic() + labs(y = 'total sleep time', x = 'inside overlapping home ranges')
+
+#SPT
+#design gg plot
+SPT_overlap_plot_gg <- as.data.frame(SPT_overlap_plot[[1]])
+over_SPT_plot = ggplot()+
+  geom_point (aes(overlap, SPT, color = overlap), Sleep_overlap_clean)+
+  geom_pointrange(aes(overlap, estimate__, ymin = lower__, ymax = upper__),SPT_overlap_plot_gg)+
+  scale_color_brewer(palette = "Paired")+
+  theme_classic() + labs(y = 'sleep period time', x = 'inside overlapping home ranges')
+
+#arrange model plots together
+ggarrange(over_eff_plot, over_TST_plot, over_SPT_plot, nrow = 1, labels = c('a', 'b', 'c'), common.legend = TRUE )
+
+################################################################################
+####Visualize the overlap####
 
 #make new dataframe
 #overlap = NA
