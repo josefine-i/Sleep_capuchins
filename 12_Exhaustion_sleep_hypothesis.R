@@ -87,7 +87,7 @@ dis_sleep_eff_model2 <- brm(bf(sleep_eff ~ distance + (distance | tag)),
                             init = 0,
                             prior = c(
                               prior(normal(0, 1), class = Intercept),
-                              prior(exponential(.8), class = sd ),
+                              prior(exponential(.8), class = sd, ),
                               prior(exponential(.8), class = sd, group = tag ),
                               prior(exponential(.8), class = sd, group = tag, coef = distance ),
                               prior(exponential(.8), class = sd, group = tag, coef = Intercept ),
@@ -99,11 +99,11 @@ dis_sleep_eff_model2 <- brm(bf(sleep_eff ~ distance + (distance | tag)),
 
 summary(dis_sleep_eff_model2)
 pp_check(dis_sleep_eff_model2)
-prior_summary(dis_sleep_eff_model2)
+posterior_interval(dis_sleep_eff_model2)
+
 h1 = hypothesis(dis_sleep_eff_model2,c("b_distance>0","b_distance<0"
 ),class="")
 print(h1,digits=3)
-
 
 
 #plot the model
@@ -112,18 +112,19 @@ plot(conditional_effects(dis_sleep_eff_model2, spaghetti = TRUE),points = TRUE)
 
 
 ################################################################################
+
 ####Correlation between TST and travelled distance during the day #### 
+
 mean(exhaustion$TST)
 
 dis_TST_model <- brm(bf(TST ~ distance + (distance | tag)), 
                       data = exhaustion[complete.cases(exhaustion[,c("distance", "TST")]),],
                       save_pars = save_pars(all = TRUE),
                       iter = 10000,
-                      init = 0,
+                      init = 0, 
                       prior = c(
                         prior(student_t(3, 482, 30), class = Intercept),
                         prior(student_t(3, 0, 20), class = b ),
-                        
                         prior(normal(0, 10), class = sd)
                       ),
                       family = skew_normal, 
@@ -136,32 +137,33 @@ h2 = hypothesis(dis_TST_model,c("b_distance>0","b_distance<0"
 ),class="")
 print(h2,digits=3)
 
-#plot the model and save the plot
+#plot the model
 dis_TST <- conditional_effects(dis_TST_model, spaghetti = TRUE)
 plot(conditional_effects(dis_TST_model, spaghetti = TRUE),points = TRUE) 
 
 ################################################################################
-####Correlation between SPT and travelled distance during the day #### 
 
 hist(exhaustion$SPT, breaks = 100)
 
 dis_SPT_model <- brm(bf(SPT ~ distance + (distance | tag)), 
                       data = exhaustion[complete.cases(exhaustion[,c("distance")]),],
                       save_pars = save_pars(all = TRUE),
-                      iter = 4000,
+                      iter = 10000,
                       init = 0,
                       prior = c(
                         prior(student_t(3, 629, 70), class = Intercept),
                         prior(student_t(3, 0, 10), class = alpha ),
-                        prior(student_t(3, 0, 20), class = sd, group = tag, coef = distance ),#if it doesn't work try it with 10
-                        prior(student_t(3, 0, 40), class = sd, group = tag, coef = Intercept ),
                         prior(normal(0, 20), class = b )
                       ),
                       family = skew_normal(), #because of the distribution of the rain and temp data
                       backend = "cmdstanr",
-                      control = list(max_treedepth = 10, adapt_delta = .9999999))
+                      control = list(max_treedepth = 10, adapt_delta =  .9999999))
 summary(dis_SPT_model)
 pp_check(dis_SPT_model)
+
+h3 = hypothesis(dis_SPT_model,c("b_distance>0","b_distance<0"
+),class="")
+print(h3,digits=3)
 
 #plot the model and save the plot
 dis_SPT <- conditional_effects(dis_SPT_model, spaghetti = TRUE)
