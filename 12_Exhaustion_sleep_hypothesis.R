@@ -31,8 +31,10 @@ traveldistance$distance = as.numeric(traveldistance$distance)
 
 # merging the dataframes into one for the models 
 exhaustion = merge(sleep_per_nona, traveldistance, by.x = c( "tag", "night" ), by.y = c("tag", "date"), all.x = TRUE)
-save(exhaustion, file= "Sleep_per_nona_with_distance&sites")
 
+exhaustion$SPT = as.integer(exhaustion$SPT)
+save(exhaustion, file= "Exhaustion")
+write.csv(exhaustion, '/Volumes/INTENSO/Bachelorarbeit/exhaustion.csv')
 ################################################################################
 
 #### Correlation between distance and ave_vedba ####
@@ -77,38 +79,52 @@ loo_R2(dis_vedba_model)
 ################################################################################
 
 ##### Correlation between distance  and sleep efficency of the following night ####
-dis_sleep_eff_model <- brm(bf(sleep_eff ~ distance + (distance | tag)), 
-                               data = exhaustion[complete.cases(exhaustion[,c("distance")]),],
-                               save_pars = save_pars(all = TRUE),
-                               iter = 10000,
-                               init = 0,
-                               prior = c(
-                                 prior(normal(0, .5), class = Intercept),
-                                 prior(exponential(2), class = sd ),
-                                 prior(normal(0, .5), class = b )
-                               ),
-                               family = Beta (link = "logit"),
-                               backend = "cmdstanr",
-                               control = list(max_treedepth = 10, adapt_delta = .999))
 
-summary(dis_sleep_eff_model)
-pp_check(dis_sleep_eff_model)
-#posterior_interval(dis_sleep_eff_model)
+dis_sleep_eff_model2 <- brm(bf(sleep_eff ~ distance + (distance | tag)), 
+                            data = exhaustion[complete.cases(exhaustion[,c("distance", "sleep_eff")]),],
+                            save_pars = save_pars(all = TRUE),
+                            iter = 30000,
+                            init = 0,
+                            prior = c(
+                              prior(normal(0, 1), class = Intercept),
+                              prior(exponential(.8), class = sd ),
+                              prior(exponential(.8), class = sd, group = tag ),
+                              prior(exponential(.8), class = sd, group = tag, coef = distance ),
+                              prior(exponential(.8), class = sd, group = tag, coef = Intercept ),
+                              prior(normal(0, .5), class = b )
+                            ),
+                            family = Beta(link = "logit"),
+                            backend = "cmdstanr",
+                            control = list(max_treedepth = 10, adapt_delta = .999999999999999))
+
+summary(dis_sleep_eff_model2)
+pp_check(dis_sleep_eff_model2)
+prior_summary(dis_sleep_eff_model2)
+h1 = hypothesis(dis_sleep_eff_model2,c("b_distance>0","b_distance<0"
+),class="")
+print(h1,digits=3)
+
+
 
 #plot the model
-conditional_effects(vedba_sleep_eff_model, spaghetti = TRUE)
-plot(conditional_effects(vedba_sleep_eff_model, spaghetti = TRUE),points = TRUE) 
+dis_eff <- conditional_effects(dis_sleep_eff_model2, spaghetti = TRUE)
+plot(conditional_effects(dis_sleep_eff_model2, spaghetti = TRUE),points = TRUE) 
 
 
 ################################################################################
-####Correlation between TST and sleep sites in overlap home ranges#### 
+####Correlation between TST and travelled distance during the day #### 
+mean(exhaustion$TST)
+
 dis_TST_model <- brm(bf(TST ~ distance + (distance | tag)), 
                       data = exhaustion[complete.cases(exhaustion[,c("distance", "TST")]),],
                       save_pars = save_pars(all = TRUE),
-                      iter = 2000,
+                      iter = 10000,
+                      init = 0,
                       prior = c(
-                        prior(student_t(3, 482, 50), class = Intercept),
-                        prior(normal(0, 10), class = b )
+                        prior(student_t(3, 482, 30), class = Intercept),
+                        prior(student_t(3, 0, 20), class = b ),
+                        
+                        prior(normal(0, 10), class = sd)
                       ),
                       family = skew_normal, 
                       backend = "cmdstanr",
@@ -116,6 +132,79 @@ dis_TST_model <- brm(bf(TST ~ distance + (distance | tag)),
 summary(dis_TST_model)
 pp_check(dis_TST_model)
 
-#plot the model
-conditional_effects(dis_TST_model, spaghetti = TRUE)
+h2 = hypothesis(dis_TST_model,c("b_distance>0","b_distance<0"
+),class="")
+print(h2,digits=3)
+
+#plot the model and save the plot
+dis_TST <- conditional_effects(dis_TST_model, spaghetti = TRUE)
 plot(conditional_effects(dis_TST_model, spaghetti = TRUE),points = TRUE) 
+
+################################################################################
+####Correlation between SPT and travelled distance during the day #### 
+
+hist(exhaustion$SPT, breaks = 100)
+
+dis_SPT_model <- brm(bf(SPT ~ distance + (distance | tag)), 
+                      data = exhaustion[complete.cases(exhaustion[,c("distance")]),],
+                      save_pars = save_pars(all = TRUE),
+                      iter = 4000,
+                      init = 0,
+                      prior = c(
+                        prior(student_t(3, 629, 70), class = Intercept),
+                        prior(student_t(3, 0, 10), class = alpha ),
+                        prior(student_t(3, 0, 20), class = sd, group = tag, coef = distance ),#if it doesn't work try it with 10
+                        prior(student_t(3, 0, 40), class = sd, group = tag, coef = Intercept ),
+                        prior(normal(0, 20), class = b )
+                      ),
+                      family = skew_normal(), #because of the distribution of the rain and temp data
+                      backend = "cmdstanr",
+                      control = list(max_treedepth = 10, adapt_delta = .9999999))
+summary(dis_SPT_model)
+pp_check(dis_SPT_model)
+
+#plot the model and save the plot
+dis_SPT <- conditional_effects(dis_SPT_model, spaghetti = TRUE)
+plot(conditional_effects(dis_SPT_model, spaghetti = TRUE),points = TRUE) 
+
+
+################################################################################
+
+#### Visualize the correlation models ####
+library(ggplot2)
+library(RColorBrewer)
+library(ggpubr)
+
+#sleep_eff
+#design gg plot
+dis_eff_plot_gg <- as.data.frame(dis_eff[[1]]) 
+eff_dis_plot = ggplot()+
+  geom_point (aes(distance, sleep_eff), exhaustion, size = 1)+
+  geom_linerange(aes(distance, estimate__, ymin = lower__, ymax = upper__, color = "#C6DBEF"), dis_eff_plot_gg, show.legend = FALSE)+
+  geom_line(aes(distance, estimate__), dis_eff_plot_gg, size = 2, color = "#2171B5")+
+  scale_color_brewer(palette = "Paired")+
+  theme_classic() + labs(y = 'sleep efficency', x = 'travelled distance')
+
+
+#TST
+dis_TST_plot_gg <- as.data.frame(dis_TST[[1]])
+TST_dis_plot = ggplot()+
+  geom_point (aes(distance, TST), exhaustion, size = 1)+
+  geom_linerange(aes(distance, estimate__, ymin = lower__, ymax = upper__, color = "#6BAED6"),dis_TST_plot_gg, show.legend = FALSE)+
+  geom_line(aes(distance, estimate__), dis_TST_plot_gg, size = 2, color = "#08519C")+
+  scale_color_brewer(palette = "Paired")+
+  theme_classic() + labs(y = 'total sleep time', x = 'travelled distance')
+
+#SPT
+dis_SPT_plot_gg <- as.data.frame(dis_SPT[[1]])
+SPT_dis_plot = ggplot()+
+  geom_point (aes(distance, SPT), exhaustion, size = 1)+
+  geom_linerange(aes(distance, estimate__, ymin = lower__, ymax = upper__, color = "#6BAED6"),dis_SPT_plot_gg, show.legend = FALSE)+
+  geom_line(aes(distance, estimate__), dis_SPT_plot_gg, size = 2, color = "#08519C")+
+  scale_color_brewer(palette = "Paired")+
+  theme_classic() + labs(y = 'sleep period time', x = 'travelled distance')
+
+
+#arrange model plots together
+ggarrange(eff_dis_plot, TST_dis_plot, nrow = 1, labels = c('a', 'b') )
+ggarrange(eff_dis_plot, TST_dis_plot, SPT_dis_plot, nrow = 1, labels = c('a', 'b', 'c') )

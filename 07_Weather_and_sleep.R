@@ -61,7 +61,7 @@ sleep_model_2 =  add_criterion(sleep_model_2, c("loo", "loo_R2"), moment_match =
 
 loo(sleep_model_2)
 #plot model 2
-conditional_effects(sleep_model_2, spaghetti = TRUE)
+rain_eff_plot <- conditional_effects(sleep_model_2, spaghetti = TRUE)
 plot(conditional_effects(sleep_model_2, spaghetti = TRUE),points = TRUE) #with all datapoints
 
 
@@ -93,8 +93,8 @@ posterior_interval(sleep_model_3)
 sleep_model_3 = add_criterion(sleep_model_3, c("loo", "loo_R2"), moment_match = TRUE,
                           backend = "cmdstanr", 
                           control = list(max_treedepth = 10, adapt_delta = .99999999))
-#plot the model
-conditional_effects(sleep_model_3, spaghetti = TRUE)
+#plot the model and save the plot 
+temp_eff <- conditional_effects(sleep_model_3, spaghetti = TRUE)
 plot(conditional_effects(sleep_model_3, spaghetti = TRUE),points = TRUE) #with all datapoints
 
 #compare the temp models#
@@ -197,8 +197,9 @@ TST_model_2 <- brm(bf(TST ~ rain + temp + (rain + temp | tag),decomp = "QR"), #s
 prior_summary(TST_model_2)
 summary(TST_model_2)
 pp_check(TST_model_2)
-#plot the model 
-conditional_effects(TST_model_2, spaghetti = TRUE)
+#plot the model and save the plot 
+rain_TST_plot <-conditional_effects(TST_model_2, spaghetti = TRUE)
+temp_TST <-conditional_effects(TST_model_2, spaghetti = TRUE)
 plot(conditional_effects(TST_model_2, spaghetti = TRUE),points = TRUE) 
 #adding criterion for comparison later 
 TST_model_2 = add_criterion(TST_model_2, c("loo", "loo_R2"), reloo = TRUE,
@@ -325,8 +326,9 @@ h4 = hypothesis(SPT_model_2,c("b_rain>0","b_rain<0",
                                 "b_temp>0","b_temp<0"),class="")
 print(h4,digits=3)
 
-#plot the model
-conditional_effects(SPT_model_2, spaghetti = TRUE)
+#plot the model and save the plot 
+rain_SPT_plot <-conditional_effects(SPT_model_2, spaghetti = TRUE)
+temp_SPT <-conditional_effects(SPT_model_2, spaghetti = TRUE)
 plot(conditional_effects(SPT_model_2, spaghetti = TRUE),points = TRUE) 
 
 #add criterion for later comparison 
@@ -402,3 +404,79 @@ loo_R2(SPT_rain_model)
 loo_R2(SPT_temp_model)
 loo_R2(SPT_model_2)
 loo_R2(SPT_model_all)
+
+################################################################################
+
+library(ggplot2)
+library(RColorBrewer)
+library(ggpubr)
+
+#### Visualize the rain plots ####
+
+#sleep_eff
+#design gg plot
+rain_eff_plot_gg <- as.data.frame(rain_eff_plot[[1]]) 
+eff_rain_plot = ggplot()+
+  geom_point (aes(rain, sleep_eff), sleep_per_nona, size = 1)+
+  geom_linerange(aes(rain, estimate__, ymin = lower__, ymax = upper__, color = "#9ECAE1"), rain_eff_plot_gg, show.legend = FALSE)+
+  geom_line(aes(rain, estimate__), rain_eff_plot_gg, size = 2.5, color = "#08306B")+
+  scale_color_brewer(palette = "Paired")+
+  theme_classic() + labs(y = 'sleep efficency', x = 'rainfall')
+
+
+#TST
+rain_TST_plot_gg <- as.data.frame(rain_TST_plot[[1]])
+TST_rain_plot = ggplot()+
+  geom_point (aes(rain, TST), sleep_per_nona, size = 1)+
+  geom_linerange(aes(rain, estimate__, ymin = lower__, ymax = upper__, color = "#9ECAE1"),rain_TST_plot_gg, show.legend = FALSE)+
+  geom_line(aes(rain, estimate__), rain_TST_plot_gg, size = 2.5, color = "#08306B")+
+  scale_color_brewer(palette = "Paired")+
+  theme_classic() + labs(y = 'total sleep time', x = 'rainfall')
+
+#SPT
+#design gg plot
+rain_SPT_plot_gg <- as.data.frame(rain_SPT_plot[[1]])
+SPT_rain_plot = ggplot()+
+  geom_point (aes(rain, SPT), sleep_per_nona, size = 1)+
+  geom_linerange(aes(rain, estimate__, ymin = lower__, ymax = upper__, color = "#9ECAE1"),rain_SPT_plot_gg, show.legend = FALSE)+
+  geom_line(aes(rain, estimate__), rain_SPT_plot_gg, size = 2.5, color = "#08306B")+
+  scale_color_brewer(palette = "Paired")+
+  theme_classic() + labs(y = 'sleep period time', x = 'rainfall')
+
+#arrange model plots together
+ggarrange(eff_rain_plot, TST_rain_plot, SPT_rain_plot, nrow = 1, labels = c('a', 'b', 'c') )
+
+#### Visualize the temp plots ####
+#sleep_eff
+#design gg plot
+temp_eff_plot_gg <- as.data.frame(temp_eff[[1]]) 
+eff_temp_plot = ggplot()+
+  geom_point (aes(temp, sleep_eff), sleep_per_nona, size = 1)+
+  geom_linerange(aes(temp, estimate__, ymin = lower__, ymax = upper__, color = "#C6DBEF"), temp_eff_plot_gg, show.legend = FALSE)+
+  geom_line(aes(temp, estimate__), temp_eff_plot_gg, size = 2.5, color = "#2171B5")+
+  scale_color_brewer(palette = "Paired")+
+  theme_classic() + labs(y = 'sleep efficency', x = 'temperature')
+
+
+#TST
+temp_TST_plot_gg <- as.data.frame(temp_TST[[2]])
+TST_temp_plot = ggplot()+
+  geom_point (aes(temp, TST), sleep_per_nona, size = 1)+
+  geom_linerange(aes(temp, estimate__, ymin = lower__, ymax = upper__, color = "#C6DBEF"),temp_TST_plot_gg, show.legend = FALSE)+
+  geom_line(aes(temp, estimate__), temp_TST_plot_gg, size = 2.5, color = "#2171B5")+
+  scale_color_brewer(palette = "Paired")+
+  theme_classic() + labs(y = 'total sleep time', x = 'temperature')
+
+#SPT
+#design gg plot
+temp_SPT_plot_gg <- as.data.frame(temp_SPT[[2]])
+SPT_temp_plot = ggplot()+
+  geom_point (aes(temp, SPT), sleep_per_nona, size = 1)+
+  geom_linerange(aes(temp, estimate__, ymin = lower__, ymax = upper__, color = "#C6DBEF"),temp_SPT_plot_gg, show.legend = FALSE)+
+  geom_line(aes(temp, estimate__), temp_SPT_plot_gg, size = 2.5, color = "#2171B5")+
+  scale_color_brewer(palette = "Paired")+
+  theme_classic() + labs(y = 'sleep period time', x = 'temperature')
+
+#arrange model plots together
+ggarrange(eff_temp_plot, TST_temp_plot, SPT_temp_plot, nrow = 1, labels = c('a', 'b', 'c') )
+

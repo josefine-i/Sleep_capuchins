@@ -1,4 +1,10 @@
 #### Nap Hypothesis ####
+library(rstan)
+library(brms)
+library(cmdstanr)
+library(sf)
+
+options(mc.cores = parallel::detectCores()) 
 
 #### Create dataframe with naps on the next day in the row of the night ####
 
@@ -34,7 +40,9 @@ napdata=do.call(rbind,napdata)
 #futurenaps = minutes slept during the next day
 
 #plot histogramm of futurenaps
-hist(napdata$futurenaps, breaks=100)
+hist(napdata$futurenaps, breaks = 100)
+#delete one outlier 
+napdata = napdata[-which(napdata$futurenaps > 100),]
 
 #shift the entire furturenaps column by .00001 to eliminate 0
 napdata$futurenaps=napdata$futurenaps+0.00001
@@ -43,7 +51,7 @@ napdata$futurenaps=napdata$futurenaps+0.00001
 mean(napdata$futurenaps, na.rm = TRUE)
 
 #Correlation model
-nap_model <- brm(futurenaps ~ sleep_eff + (sleep_eff | tag),
+nap_eff_model <- brm(futurenaps ~ sleep_eff + (sleep_eff | tag),
                      data = napdata[complete.cases(napdata[,c("futurenaps","sleep_eff")]),], 
                      save_pars = save_pars(all = TRUE),
                  prior = c(prior(gamma(2, .1), class = shape),
@@ -54,21 +62,18 @@ nap_model <- brm(futurenaps ~ sleep_eff + (sleep_eff | tag),
                      backend = "cmdstanr",
                      control = list(max_treedepth = 10, adapt_delta = .99999))
 
-summary(nap_model)
-pp_check(nap_model)
+summary(nap_eff_model)
+pp_check(nap_eff_model)
 
 #look cloesly at the interval
-h3 = hypothesis(nap_model,c("b_sleep_eff>0","b_sleep_eff<0"
+h3 = hypothesis(nap_eff_model,c("b_sleep_eff>0","b_sleep_eff<0"
 ),class="")
 print(h3,digits=3)
-posterior_interval(nap_model, prob = .89)
+posterior_interval(nap_eff_model, prob = .89)
 
-#plot the correlation model 
-conditional_effects(nap_model, spaghetti = TRUE)
-plot(conditional_effects(nap_model, spaghetti = TRUE),points = TRUE)
-#save plot
-napplot=plot(conditional_effects(nap_model, spaghetti = TRUE),points = TRUE)[[1]] ##save brms plot as ggplot object
-napplot+theme_classic()
+#plot the correlation model ans save plot
+nap_eff <- conditional_effects(nap_eff_model, spaghetti = TRUE)
+plot(conditional_effects(nap_eff_model, spaghetti = TRUE),points = TRUE)
 
 
 #### Correlation between TST and futurenaps ####
@@ -76,21 +81,55 @@ napplot+theme_classic()
 nap_TST_model <- brm(futurenaps ~ TST + (TST | tag),
                  data = napdata[complete.cases(napdata[,c("futurenaps","TST")]),], 
                  save_pars = save_pars(all = TRUE),
-                 iter = 10000, init = 0,
+                 iter = 2000, 
+                 init = 0,
                  prior = c(prior(gamma(2, .1), class = shape),
                            prior(student_t(3, 4, 1.5), class = Intercept),
                            prior(student_t(3, 0, 1.5), class = sd),
                            prior(student_t(3, 0, 1.5), class = b)),
                  family = Gamma(link = "log"),
                  backend = "cmdstanr",
-                 control = list(max_treedepth = 10, adapt_delta = .9999999))
+                 control = list(max_treedepth = 10, adapt_delta = .9999))
 summary(nap_TST_model)
-prior_summary(nap_TST_model)
+pp_check(nap_TST_model)
+h1 = hypothesis(nap_TST_model,c("b_TST>0","b_TST<0"
+),class="")
+print(h1,digits=3)
+posterior_interval(nap_TST_model, prob = .82)
 
-#plot the correlation model 
-conditional_effects(nap_TST_model, spaghetti = TRUE)
+#plot the correlation model and save plot
+nap_TST <- conditional_effects(nap_TST_model, spaghetti = TRUE)
 plot(conditional_effects(nap_TST_model, spaghetti = TRUE),points = TRUE)
-#save plot 
-nap_TST_plot=plot(conditional_effects(nap_TST_model, spaghetti = TRUE),points = TRUE)[[1]] ##save brms plot as ggplot object
-nap_TST_plot+theme_classic()
+
+
+#### Visualize the nap plots ####
+
+library(ggplot2)
+library(RColorBrewer)
+library(ggpubr)
+
+#sleep_eff
+#design gg plot
+nap_eff_plot_gg <- as.data.frame(nap_eff[[1]]) 
+eff_nap_plot = ggplot()+
+  geom_point (aes(sleep_eff, futurenaps), napdata, size = 1)+
+  geom_linerange(aes(sleep_eff, estimate__, ymin = lower__, ymax = upper__, color = "#6BAED6"), nap_eff_plot_gg, show.legend = FALSE)+
+  geom_line(aes(sleep_eff, estimate__), nap_eff_plot_gg, size = 2, color = "#08519C")+
+  scale_color_brewer(palette = "Paired")+
+  theme_classic() + labs(y = 'sleep during the next day', x = 'sleep efficency')
+
+
+#TST
+nap_TST_plot_gg <- as.data.frame(nap_TST[[1]])
+TST_nap_plot = ggplot()+
+  geom_point (aes(TST, futurenaps), napdata, size = 1)+
+  geom_linerange(aes(TST, estimate__, ymin = lower__, ymax = upper__, color = "#6BAED6"),nap_TST_plot_gg, show.legend = FALSE)+
+  geom_line(aes(TST, estimate__), nap_TST_plot_gg, size = 2, color = "#08519C")+
+  scale_color_brewer(palette = "Paired")+
+  theme_classic() + labs(y = 'sleep during the next day', x = 'total sleep time')
+
+
+#arrange model plots together
+ggarrange(eff_nap_plot, TST_nap_plot, nrow = 1, labels = c('a', 'b') )
+
 
