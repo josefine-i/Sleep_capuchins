@@ -106,7 +106,7 @@ h1 = hypothesis(dis_sleep_eff_model2,c("b_distance>0","b_distance<0"
 print(h1,digits=3)
 
 
-#plot the model
+#plot the model and save the plot 
 dis_eff <- conditional_effects(dis_sleep_eff_model2, spaghetti = TRUE)
 plot(conditional_effects(dis_sleep_eff_model2, spaghetti = TRUE),points = TRUE) 
 
@@ -137,7 +137,7 @@ h2 = hypothesis(dis_TST_model,c("b_distance>0","b_distance<0"
 ),class="")
 print(h2,digits=3)
 
-#plot the model
+#plot the model and save the plot
 dis_TST <- conditional_effects(dis_TST_model, spaghetti = TRUE)
 plot(conditional_effects(dis_TST_model, spaghetti = TRUE),points = TRUE) 
 
@@ -192,8 +192,8 @@ eff_dis_plot = ggplot()+
 dis_TST_plot_gg <- as.data.frame(dis_TST[[1]])
 TST_dis_plot = ggplot()+
   geom_point (aes(distance, TST), exhaustion, size = 1)+
-  geom_linerange(aes(distance, estimate__, ymin = lower__, ymax = upper__, color = "#6BAED6"),dis_TST_plot_gg, show.legend = FALSE)+
-  geom_line(aes(distance, estimate__), dis_TST_plot_gg, size = 2, color = "#08519C")+
+  geom_linerange(aes(distance, estimate__, ymin = lower__, ymax = upper__, color = "#C6DBEF"),dis_TST_plot_gg, show.legend = FALSE)+
+  geom_line(aes(distance, estimate__), dis_TST_plot_gg, size = 2, color = "#2171B5")+
   scale_color_brewer(palette = "Paired")+
   theme_classic() + labs(y = 'total sleep time', x = 'travelled distance')
 
@@ -201,8 +201,8 @@ TST_dis_plot = ggplot()+
 dis_SPT_plot_gg <- as.data.frame(dis_SPT[[1]])
 SPT_dis_plot = ggplot()+
   geom_point (aes(distance, SPT), exhaustion, size = 1)+
-  geom_linerange(aes(distance, estimate__, ymin = lower__, ymax = upper__, color = "#6BAED6"),dis_SPT_plot_gg, show.legend = FALSE)+
-  geom_line(aes(distance, estimate__), dis_SPT_plot_gg, size = 2, color = "#08519C")+
+  geom_linerange(aes(distance, estimate__, ymin = lower__, ymax = upper__, color = "#C6DBEF"),dis_SPT_plot_gg, show.legend = FALSE)+
+  geom_line(aes(distance, estimate__), dis_SPT_plot_gg, size = 2, color = "#2171B5")+
   scale_color_brewer(palette = "Paired")+
   theme_classic() + labs(y = 'sleep period time', x = 'travelled distance')
 

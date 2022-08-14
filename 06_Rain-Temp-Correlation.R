@@ -55,3 +55,65 @@ conditional_effects(weather_model2, spaghetti = TRUE)
 loo_compare(weather_model,weather_model2)
 loo_R2(weather_model)
 loo_R2(weather_model2)
+
+
+################################################################################
+
+####Models for average temp of the night and sum of rain of the night ####
+
+sleep_per_nona$rain2=sleep_per_nona$rain+.001
+hist(sleep_per_nona$rain2, breaks = 100)
+
+weather_model_3 <- brm(rain2 ~ temp,
+                     data = sleep_per_nona[complete.cases(sleep_per_nona[,c("rain2","temp")]),], 
+                     save_pars = save_pars(all = TRUE),
+                     prior = c(prior(gamma(2, .1), class = shape),
+                               prior(normal(0, 10), class = Intercept),
+                               prior(normal(0, 10), class = b)),
+                     family = Gamma(link = "log"),
+                     backend = "cmdstanr",
+                     control = list(max_treedepth = 10, adapt_delta = .999))
+#show the summary of the model
+summary(weather_model_3)
+pp_check(weather_model_3)
+#add a criterion to later compare the model 
+weather_model_3 = add_criterion(weather_model_3, c("loo", "loo_R2"), moment_match = TRUE,
+                            backend = "cmdstanr", 
+                            control = list(max_treedepth = 10, adapt_delta = .999))
+
+#plot the correlation 
+conditional_effects(weather_model_3, spaghetti = TRUE)
+#plot the correlation with every single datapoint
+plot(conditional_effects(weather_model_3, spaghetti = TRUE),points = TRUE)
+
+
+weather_model_4 <- brm(rain2 ~ temp,
+                      data = sleep_per_nona[complete.cases(sleep_per_nona[,c("rain2","temp")]),],
+                      save_pars = save_pars(all = TRUE),
+                      prior = c(prior(gamma(2, .1), class = shape),
+                                prior(normal(0, 10), class = Intercept),
+                                prior(normal(0, 10), class = b)),
+                      family = hurdle_gamma(),
+                      backend = "cmdstanr",
+                      control = list(max_treedepth = 10, adapt_delta = .999))
+#show the summary of the model
+summary(weather_model_4)
+pp_check(weather_model_4)
+#add a criterion to later compare the model 
+weather_model_4 = add_criterion(weather_model_4, c("loo", "loo_R2"), moment_match = TRUE,
+                                backend = "cmdstanr", 
+                                control = list(max_treedepth = 10, adapt_delta = .999))
+
+#plot the correlation 
+conditional_effects(weather_model_4, spaghetti = TRUE)
+#plot the correlation with every single datapoint
+plot(conditional_effects(weather_model_4, spaghetti = TRUE),points = TRUE)
+
+loo_compare(weather_model_3,weather_model_4)
+loo_R2(weather_model_3)
+loo_R2(weather_model_4)
+
+
+#### the other way around ####
+
+hist(sleep_per_nona$temp, breaks = 100)
