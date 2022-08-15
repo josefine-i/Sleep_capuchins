@@ -64,6 +64,7 @@ nap_eff_model <- brm(futurenaps ~ sleep_eff + (sleep_eff | tag),
 
 summary(nap_eff_model)
 pp_check(nap_eff_model)
+loo_R2(nap_eff_model)
 
 #look cloesly at the interval
 h3 = hypothesis(nap_eff_model,c("b_sleep_eff>0","b_sleep_eff<0"
@@ -96,6 +97,7 @@ h1 = hypothesis(nap_TST_model,c("b_TST>0","b_TST<0"
 ),class="")
 print(h1,digits=3)
 posterior_interval(nap_TST_model, prob = .82)
+loo_R2(nap_TST_model)
 
 #plot the correlation model and save plot
 nap_TST <- conditional_effects(nap_TST_model, spaghetti = TRUE)

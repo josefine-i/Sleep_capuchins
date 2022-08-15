@@ -101,6 +101,7 @@ plot(conditional_effects(sleep_model_3, spaghetti = TRUE),points = TRUE) #with a
 loo_compare(sleep_model_3,sleep_model_2)
 loo_R2(sleep_model_3)
 loo_R2(sleep_model_2)
+bayes_R2(sleep_model_2)
 
 #test the interval of temp in sleep model 3
 h2 = hypothesis(sleep_model_3,c("b_temp>0","b_temp<0"),class="")

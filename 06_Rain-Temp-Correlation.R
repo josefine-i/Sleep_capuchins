@@ -81,8 +81,8 @@ weather_model_3 = add_criterion(weather_model_3, c("loo", "loo_R2"), moment_matc
                             backend = "cmdstanr", 
                             control = list(max_treedepth = 10, adapt_delta = .999))
 
-#plot the correlation 
-conditional_effects(weather_model_3, spaghetti = TRUE)
+#save the plot  
+rain_temp <- conditional_effects(weather_model_3, spaghetti = TRUE)
 #plot the correlation with every single datapoint
 plot(conditional_effects(weather_model_3, spaghetti = TRUE),points = TRUE)
 
@@ -113,7 +113,13 @@ loo_compare(weather_model_3,weather_model_4)
 loo_R2(weather_model_3)
 loo_R2(weather_model_4)
 
+#plot the used model 
+rain_temp_plot_gg <- as.data.frame(rain_temp[[1]])
+rain_temp_plot = ggplot()+
+  geom_point (aes(temp, rain), sleep_per_nona, size = 1)+
+  geom_linerange(aes(temp, estimate__, ymin = lower__, ymax = upper__, color = "#C6DBEF"),rain_temp_plot_gg, show.legend = FALSE)+
+  geom_line(aes(temp, estimate__), rain_temp_plot_gg, size = 2, color = "#2171B5")+
+  scale_color_brewer(palette = "Paired")+
+  theme_classic() + labs(y = 'rain', x = 'temperature')
 
-#### the other way around ####
-
-hist(sleep_per_nona$temp, breaks = 100)
+print(rain_temp_plot)

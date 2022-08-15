@@ -24,6 +24,7 @@ overlap_sleep_eff_model <- brm(bf(sleep_eff ~ overlap + (overlap | tag)),
 summary(overlap_sleep_eff_model)
 pp_check(overlap_sleep_eff_model)
 posterior_interval(overlap_sleep_eff_model)
+loo_R2(overlap_sleep_eff_model)
 
 #plot the model and save the plot 
 overlap_eff_plot <- conditional_effects(overlap_sleep_eff_model, spaghetti = TRUE)
@@ -46,6 +47,7 @@ overlap_TST_model <- brm(bf(TST ~ overlap + (overlap | tag)),
                    control = list(max_treedepth = 10, adapt_delta = .999))
 summary(overlap_TST_model)
 pp_check(overlap_TST_model)
+loo_R2(overlap_TST_model)
 
 #plot the model and save the plot 
 TST_overlap_plot <- conditional_effects(overlap_TST_model, spaghetti = TRUE)
@@ -67,6 +69,7 @@ overlap_SPT_model <- brm(bf(SPT ~ overlap + (overlap | tag)),
                          control = list(max_treedepth = 10, adapt_delta = .999))
 summary(overlap_SPT_model)
 pp_check(overlap_SPT_model)
+loo_R2(overlap_SPT_model)
 
 #plot the model and save the plot
 SPT_overlap_plot <- conditional_effects(overlap_SPT_model, spaghetti = TRUE)

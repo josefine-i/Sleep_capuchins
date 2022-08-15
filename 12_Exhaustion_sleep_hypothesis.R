@@ -100,6 +100,7 @@ dis_sleep_eff_model2 <- brm(bf(sleep_eff ~ distance + (distance | tag)),
 summary(dis_sleep_eff_model2)
 pp_check(dis_sleep_eff_model2)
 posterior_interval(dis_sleep_eff_model2)
+loo_R2(dis_sleep_eff_model2)
 
 h1 = hypothesis(dis_sleep_eff_model2,c("b_distance>0","b_distance<0"
 ),class="")
@@ -132,6 +133,7 @@ dis_TST_model <- brm(bf(TST ~ distance + (distance | tag)),
                       control = list(max_treedepth = 10, adapt_delta = .999))
 summary(dis_TST_model)
 pp_check(dis_TST_model)
+loo_R2(dis_TST_model)
 
 h2 = hypothesis(dis_TST_model,c("b_distance>0","b_distance<0"
 ),class="")
@@ -160,6 +162,7 @@ dis_SPT_model <- brm(bf(SPT ~ distance + (distance | tag)),
                       control = list(max_treedepth = 10, adapt_delta =  .9999999))
 summary(dis_SPT_model)
 pp_check(dis_SPT_model)
+loo_R2(dis_SPT_model)
 
 h3 = hypothesis(dis_SPT_model,c("b_distance>0","b_distance<0"
 ),class="")
