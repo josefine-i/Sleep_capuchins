@@ -120,3 +120,51 @@ axis( 1, at = seq( 0, 60*24*60, 1*60*60), labels = F )
 axis( 2, at = c( 0.0, 0.0002, 0.0004 ), labels = c( '0.0', '0.0002', '0.0004' ), las = 2 )
 
 #### End of Fig
+
+#### some important values ####
+
+#sunset
+as_hms(ave_sunset)
+as_hms(std.error( as.numeric( as_hms( sun_trim$sunset ) ) ) )
+
+#sunrise 
+as_hms( mean( as.numeric( as_hms( sun_trim$sunrise ) ) ) )
+as_hms(std.error( as.numeric( as_hms( sun_trim$sunrise ) ) ) )
+
+#night start
+as_hms(ave_night_start)
+as_hms(std.error( as.numeric( as_hms( sun_trim$night_start ) ) ) )
+
+#night end
+as_hms(std.error( as.numeric( as_hms( sun_trim$night_end ) ) ) )
+as_hms( mean( as.numeric( as_hms( sun_trim$night_end ) ) ) )
+
+#sleep onset
+as_hms( mean( as.numeric( as_hms(sleep_per_nona$onset ) ) ) )
+as_hms(std.error( as.numeric( as_hms(sleep_per_nona$onset ) ) ) )
+
+#sleep offset
+as_hms( mean( as.numeric( as_hms(sleep_per_nona$waking ) ) ) )
+as_hms(std.error( as.numeric( as_hms(sleep_per_nona$waking ) ) ) )
+
+#SPT
+mean(sleep_per_nona$SPT)
+std.error(sleep_per_nona$SPT)
+
+#TST
+mean(sleep_per_nona$TST)
+std.error(sleep_per_nona$TST)
+
+#sleep efficency 
+mean(sleep_per_nona$sleep_eff)
+std.error(sleep_per_nona$sleep_eff)
+
+
+e#sleep onset and night start
+start = as_hms( mean( as.numeric( as_hms(sleep_per_nona$onset ) ) ) )-as_hms( mean( as.numeric( as_hms( sun_trim$night_start ) ) ) )
+print(start)
+
+#sleep offset and night end
+end = as_hms( mean( as.numeric( as_hms(sleep_per_nona$waking ) ) ) )-as_hms( mean( as.numeric( as_hms( sun_trim$night_end ) ) ) )
+print(end)
+

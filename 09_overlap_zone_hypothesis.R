@@ -99,7 +99,7 @@ over_TST_plot = ggplot()+
   geom_point (aes(overlap, TST, color = overlap), Sleep_overlap_clean)+
   geom_pointrange(aes(overlap, estimate__, ymin = lower__, ymax = upper__),TST_overlap_plot_gg)+
   scale_color_brewer(palette = "Paired")+
-  theme_classic() + labs(y = 'total sleep time', x = 'inside overlapping home ranges')
+  theme_classic() + labs(y = 'total sleep time (min)', x = 'inside overlapping home ranges')
 
 #SPT
 #design gg plot
@@ -108,7 +108,7 @@ over_SPT_plot = ggplot()+
   geom_point (aes(overlap, SPT, color = overlap), Sleep_overlap_clean)+
   geom_pointrange(aes(overlap, estimate__, ymin = lower__, ymax = upper__),SPT_overlap_plot_gg)+
   scale_color_brewer(palette = "Paired")+
-  theme_classic() + labs(y = 'sleep period time', x = 'inside overlapping home ranges')
+  theme_classic() + labs(y = 'sleep period time (min)', x = 'inside overlapping home ranges')
 
 #arrange model plots together
 ggarrange(over_eff_plot, over_TST_plot, over_SPT_plot, nrow = 1, labels = c('a', 'b', 'c'), common.legend = TRUE )
@@ -127,7 +127,7 @@ TST_overlap_box = ggplot(Sleep_overlap_clean,
   scale_fill_brewer(palette = "Paired")+
   theme_classic()+
   labs(x = "sleep in overlap zone",
-       y = "total sleep time")
+       y = "total sleep time (min)")
 
 #boxplot sleep_eff
 eff_overlap_box = ggplot(Sleep_overlap_clean,

@@ -55,7 +55,7 @@ mean(exhaustion$prev_day_ave_vedba)
 dis_vedba_model <- brm(bf(prev_day_ave_vedba ~ distance + (distance | tag)), 
                              data = exhaustion[complete.cases(exhaustion[,c("prev_day_ave_vedba", "distance")]),],
                              save_pars = save_pars(all = TRUE),
-                             iter = 10000,
+                             iter = 30000,
                              prior = c(
                                prior(student_t(3, 4, 50), class = Intercept),
                                prior(student_t(3, 0, 20), class = sd ),
@@ -68,12 +68,21 @@ summary(dis_vedba_model)
 pp_check(dis_vedba_model)
 #look closely at the intervals 
 posterior_interval(dis_vedba_model, prob = .9)
-#plot the model 
-conditional_effects(dis_vedba_model, spaghetti = TRUE)
+#plot the model anssave the plot 
+dis_vedba <- conditional_effects(dis_vedba_model, spaghetti = TRUE)
 plot(conditional_effects(dis_vedba_model, spaghetti = FALSE),points = TRUE) 
 #see how much vedba can be predicted by travelled distance
 loo_R2(dis_vedba_model)
 
+#design the plot 
+dis_vedba_plot_gg <- as.data.frame(dis_vedba[[1]]) 
+vedba_dis_plot = ggplot()+
+  geom_point (aes(distance, prev_day_ave_vedba), exhaustion, size = 1)+
+  geom_linerange(aes(distance, estimate__, ymin = lower__, ymax = upper__, color = "#C6DBEF"), dis_vedba_plot_gg, show.legend = FALSE)+
+  geom_line(aes(distance, estimate__), dis_vedba_plot_gg, size = 2, color = "#2171B5")+
+  scale_color_brewer(palette = "Paired")+
+  theme_classic() + labs(y = 'average VeDBA', x = 'travel distance (m)')
+print(vedba_dis_plot)
 #distance was taken as a measurement of physical exhaustion during the day, since most vedba is biologically explained otherwise 
 
 ################################################################################
@@ -134,6 +143,7 @@ dis_TST_model <- brm(bf(TST ~ distance + (distance | tag)),
 summary(dis_TST_model)
 pp_check(dis_TST_model)
 loo_R2(dis_TST_model)
+bayes_R2(dis_TST_model)
 
 h2 = hypothesis(dis_TST_model,c("b_distance>0","b_distance<0"
 ),class="")
@@ -188,7 +198,7 @@ eff_dis_plot = ggplot()+
   geom_linerange(aes(distance, estimate__, ymin = lower__, ymax = upper__, color = "#C6DBEF"), dis_eff_plot_gg, show.legend = FALSE)+
   geom_line(aes(distance, estimate__), dis_eff_plot_gg, size = 2, color = "#2171B5")+
   scale_color_brewer(palette = "Paired")+
-  theme_classic() + labs(y = 'sleep efficency', x = 'travelled distance')
+  theme_classic() + labs(y = 'sleep efficency', x = 'travel distance (m)')
 
 
 #TST
@@ -198,7 +208,7 @@ TST_dis_plot = ggplot()+
   geom_linerange(aes(distance, estimate__, ymin = lower__, ymax = upper__, color = "#C6DBEF"),dis_TST_plot_gg, show.legend = FALSE)+
   geom_line(aes(distance, estimate__), dis_TST_plot_gg, size = 2, color = "#2171B5")+
   scale_color_brewer(palette = "Paired")+
-  theme_classic() + labs(y = 'total sleep time', x = 'travelled distance')
+  theme_classic() + labs(y = 'total sleep time (min)', x = 'travel distance (m)')
 
 #SPT
 dis_SPT_plot_gg <- as.data.frame(dis_SPT[[1]])
@@ -207,9 +217,9 @@ SPT_dis_plot = ggplot()+
   geom_linerange(aes(distance, estimate__, ymin = lower__, ymax = upper__, color = "#C6DBEF"),dis_SPT_plot_gg, show.legend = FALSE)+
   geom_line(aes(distance, estimate__), dis_SPT_plot_gg, size = 2, color = "#2171B5")+
   scale_color_brewer(palette = "Paired")+
-  theme_classic() + labs(y = 'sleep period time', x = 'travelled distance')
+  theme_classic() + labs(y = 'sleep period time (min)', x = 'travel distance (m)')
 
 
 #arrange model plots together
 ggarrange(eff_dis_plot, TST_dis_plot, nrow = 1, labels = c('a', 'b') )
-ggarrange(eff_dis_plot, TST_dis_plot, SPT_dis_plot, nrow = 1, labels = c('a', 'b', 'c') )
+ggarrange(eff_dis_plot, TST_dis_plot, SPT_dis_plot, labels = c('a', 'b', 'c') )

@@ -197,6 +197,7 @@ TST_model_2 <- brm(bf(TST ~ rain + temp + (rain + temp | tag),decomp = "QR"), #s
                      control = list(max_treedepth = 10, adapt_delta = .99999))
 prior_summary(TST_model_2)
 summary(TST_model_2)
+bayes_R2(TST_model_2)
 pp_check(TST_model_2)
 #plot the model and save the plot 
 rain_TST_plot <-conditional_effects(TST_model_2, spaghetti = TRUE)
@@ -422,7 +423,7 @@ eff_rain_plot = ggplot()+
   geom_linerange(aes(rain, estimate__, ymin = lower__, ymax = upper__, color = "#9ECAE1"), rain_eff_plot_gg, show.legend = FALSE)+
   geom_line(aes(rain, estimate__), rain_eff_plot_gg, size = 2.5, color = "#08306B")+
   scale_color_brewer(palette = "Paired")+
-  theme_classic() + labs(y = 'sleep efficency', x = 'rainfall')
+  theme_classic() + labs(y = 'sleep efficency', x = 'rainfall (mm)')
 
 
 #TST
@@ -432,7 +433,7 @@ TST_rain_plot = ggplot()+
   geom_linerange(aes(rain, estimate__, ymin = lower__, ymax = upper__, color = "#9ECAE1"),rain_TST_plot_gg, show.legend = FALSE)+
   geom_line(aes(rain, estimate__), rain_TST_plot_gg, size = 2.5, color = "#08306B")+
   scale_color_brewer(palette = "Paired")+
-  theme_classic() + labs(y = 'total sleep time', x = 'rainfall')
+  theme_classic() + labs(y = 'total sleep time (min)', x = 'rainfall (mm)')
 
 #SPT
 #design gg plot
@@ -442,10 +443,10 @@ SPT_rain_plot = ggplot()+
   geom_linerange(aes(rain, estimate__, ymin = lower__, ymax = upper__, color = "#9ECAE1"),rain_SPT_plot_gg, show.legend = FALSE)+
   geom_line(aes(rain, estimate__), rain_SPT_plot_gg, size = 2.5, color = "#08306B")+
   scale_color_brewer(palette = "Paired")+
-  theme_classic() + labs(y = 'sleep period time', x = 'rainfall')
+  theme_classic() + labs(y = 'sleep period time (min)', x = 'rainfall (mm)')
 
 #arrange model plots together
-ggarrange(eff_rain_plot, TST_rain_plot, SPT_rain_plot, nrow = 1, labels = c('a', 'b', 'c') )
+ggarrange(eff_rain_plot, TST_rain_plot, SPT_rain_plot, labels = c('a', 'b', 'c') )
 
 #### Visualize the temp plots ####
 #sleep_eff
@@ -456,7 +457,7 @@ eff_temp_plot = ggplot()+
   geom_linerange(aes(temp, estimate__, ymin = lower__, ymax = upper__, color = "#C6DBEF"), temp_eff_plot_gg, show.legend = FALSE)+
   geom_line(aes(temp, estimate__), temp_eff_plot_gg, size = 2.5, color = "#2171B5")+
   scale_color_brewer(palette = "Paired")+
-  theme_classic() + labs(y = 'sleep efficency', x = 'temperature')
+  theme_classic() + labs(y = 'sleep efficency', x = 'temperature (°C)')
 
 
 #TST
@@ -466,7 +467,7 @@ TST_temp_plot = ggplot()+
   geom_linerange(aes(temp, estimate__, ymin = lower__, ymax = upper__, color = "#C6DBEF"),temp_TST_plot_gg, show.legend = FALSE)+
   geom_line(aes(temp, estimate__), temp_TST_plot_gg, size = 2.5, color = "#2171B5")+
   scale_color_brewer(palette = "Paired")+
-  theme_classic() + labs(y = 'total sleep time', x = 'temperature')
+  theme_classic() + labs(y = 'total sleep time (min)', x = 'temperature (°C)')
 
 #SPT
 #design gg plot
@@ -476,8 +477,8 @@ SPT_temp_plot = ggplot()+
   geom_linerange(aes(temp, estimate__, ymin = lower__, ymax = upper__, color = "#C6DBEF"),temp_SPT_plot_gg, show.legend = FALSE)+
   geom_line(aes(temp, estimate__), temp_SPT_plot_gg, size = 2.5, color = "#2171B5")+
   scale_color_brewer(palette = "Paired")+
-  theme_classic() + labs(y = 'sleep period time', x = 'temperature')
+  theme_classic() + labs(y = 'sleep period time (min)', x = 'temperature (°C)')
 
 #arrange model plots together
-ggarrange(eff_temp_plot, TST_temp_plot, SPT_temp_plot, nrow = 1, labels = c('a', 'b', 'c') )
+ggarrange(eff_temp_plot, TST_temp_plot, SPT_temp_plot, labels = c('a', 'b', 'c') )
 

@@ -254,8 +254,8 @@ firstyear_clean=ggplot()+
   theme_classic()+
   labs(x = " ",
        y = "",
-       color = "individual")
-
+       color = "individual") 
+  
 
 
 secondyear_clean=ggplot()+
@@ -277,7 +277,7 @@ secondyear_clean=ggplot()+
 library(ggpubr)
 ##ggarrange lets us make a multipanel plot
 ggarrange(firstyear,secondyear) #with bad
-ggarrange(firstyear_clean,secondyear_clean, labels = c('2015', '2017'), label.args = list(gp = grid::gpar(font = 4, cex = 1.2))) #without bad
+ggarrange(firstyear_clean,secondyear_clean, labels = c('2015', '2017')) #without bad
 
 
 #saving the overlap data 

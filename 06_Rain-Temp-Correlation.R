@@ -120,6 +120,6 @@ rain_temp_plot = ggplot()+
   geom_linerange(aes(temp, estimate__, ymin = lower__, ymax = upper__, color = "#C6DBEF"),rain_temp_plot_gg, show.legend = FALSE)+
   geom_line(aes(temp, estimate__), rain_temp_plot_gg, size = 2, color = "#2171B5")+
   scale_color_brewer(palette = "Paired")+
-  theme_classic() + labs(y = 'rain', x = 'temperature')
+  theme_classic() + labs(y = 'rain (mm)', x = 'temperature (°C)')
 
 print(rain_temp_plot)

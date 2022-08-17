@@ -118,7 +118,7 @@ eff_nap_plot = ggplot()+
   geom_linerange(aes(sleep_eff, estimate__, ymin = lower__, ymax = upper__, color = "#6BAED6"), nap_eff_plot_gg, show.legend = FALSE)+
   geom_line(aes(sleep_eff, estimate__), nap_eff_plot_gg, size = 2, color = "#08519C")+
   scale_color_brewer(palette = "Paired")+
-  theme_classic() + labs(y = 'sleep during the next day', x = 'sleep efficency')
+  theme_classic() + labs(y = 'sleep during the next day (min)', x = 'sleep efficency')
 
 
 #TST
@@ -128,7 +128,7 @@ TST_nap_plot = ggplot()+
   geom_linerange(aes(TST, estimate__, ymin = lower__, ymax = upper__, color = "#6BAED6"),nap_TST_plot_gg, show.legend = FALSE)+
   geom_line(aes(TST, estimate__), nap_TST_plot_gg, size = 2, color = "#08519C")+
   scale_color_brewer(palette = "Paired")+
-  theme_classic() + labs(y = 'sleep during the next day', x = 'total sleep time')
+  theme_classic() + labs(y = 'sleep during the next day (min)', x = 'total sleep time (min)')
 
 
 #arrange model plots together
