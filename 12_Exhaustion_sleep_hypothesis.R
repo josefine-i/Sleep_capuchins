@@ -66,11 +66,12 @@ dis_vedba_model <- brm(bf(prev_day_ave_vedba ~ distance + (distance | tag)),
                              control = list(max_treedepth = 10, adapt_delta = .999))
 summary(dis_vedba_model)
 pp_check(dis_vedba_model)
+print(summary(dis_vedba_model), digits = 5)
 #look closely at the intervals 
 posterior_interval(dis_vedba_model, prob = .9)
 #plot the model anssave the plot 
 dis_vedba <- conditional_effects(dis_vedba_model, spaghetti = TRUE)
-plot(conditional_effects(dis_vedba_model, spaghetti = FALSE),points = TRUE) 
+  plot(conditional_effects(dis_vedba_model, spaghetti = FALSE),points = TRUE) 
 #see how much vedba can be predicted by travelled distance
 loo_R2(dis_vedba_model)
 
@@ -110,7 +111,7 @@ summary(dis_sleep_eff_model2)
 pp_check(dis_sleep_eff_model2)
 posterior_interval(dis_sleep_eff_model2)
 loo_R2(dis_sleep_eff_model2)
-
+print(summary(dis_sleep_eff_model2), digits = 5)
 h1 = hypothesis(dis_sleep_eff_model2,c("b_distance>0","b_distance<0"
 ),class="")
 print(h1,digits=3)
@@ -173,7 +174,7 @@ dis_SPT_model <- brm(bf(SPT ~ distance + (distance | tag)),
 summary(dis_SPT_model)
 pp_check(dis_SPT_model)
 loo_R2(dis_SPT_model)
-
+print(summary(dis_SPT_model), digits = 5)
 h3 = hypothesis(dis_SPT_model,c("b_distance>0","b_distance<0"
 ),class="")
 print(h3,digits=3)
