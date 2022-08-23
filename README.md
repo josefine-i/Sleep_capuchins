@@ -11,24 +11,24 @@ To reproduce the results, run the code in the numbered order, as following codes
   
 `01_installing_packages.R`: installs all needed packages for the analysis
 
-Code 02: Download acc from movebank script: is downloading the data from movebank into R directly
+`02_Download_acc_from_movebank_script.R`: is downloading the data from movebank into R directly
 
-Code 03: Calculating vedba from raw acc: taking the raw acc data and calculating the overall movement 
+`03_calculating_vedba_from_raw_acc.R`: Calculating vedba from raw acc: taking the raw acc data and calculating the overall movement 
 
-Code 04: Sleep analysis: is setting a movement threshold under which the animal is considered asleep. From that it calulates sleep times and other sleep paramters
+`04_sleep_analysis.R`: calculates sleep parameters by setting a movement threshold under which the animal is considered asleep. Onset and waking times are determines, from which sleep times and effciency is calculated.
 
-Code 05: Looking at weather data: is preparing the weather data, removes outiners etc.
+`05_Looking_at_weather_data.R`: is preparing the weather data, removes outiners etc.
 
-Code 06: Rain-Temp-Correlation: checks if there is a correlation between rain and temperature that needs to be considered in further analysis 
+`06_Rain-Temp-Correlation.R`: checks if there is a correlation between rain and temperature that needs to be considered in further analysis 
 
-Code 07: Weather and sleep: Tests for effects of rain and temperature on sleep efficency, TST and SPT. 
+`07_Weather_and_sleep.R`: Tests for effects of rain and temperature on sleep efficency, TST and SPT. 
 
-Code 08: Capuchin sleep site home range overlap: reads in home range gps files, calculates coordinate sof sleep sites and compares them to overlap zones of the home ranges of other individuals in the same year.
+`08_Capuchin_sleep_site_home_range_overlap.R`: reads in home range gps files, calculates coordinate sof sleep sites and compares them to overlap zones of the home ranges of other individuals in the same year.
 
-Code 09: Overlap zone hypothesis: Tests effect of sleep inside or outside the overlapping home range zones on the sleep parameters.
+`09_overlap_zone_hypothesis.R`: Tests effect of sleep inside or outside the overlapping home range zones on the sleep parameters.
 
-Code 10: Onset vedba plot: creates a figure of the average vedba overall during the day and sunset/sunrise times. And the same for onset and waking times
+`10-Onset-vedba-Plot.R`: creates a figure of the average vedba overall during the day and sunset/sunrise times. And the same for onset and waking times. It therefore takes in "sun_dat" from Code 04.  
 
-Code 11: Nap Hypothesis: tests for an effect of bad sleep in the previous night on more naptime during the next day
+`11_Nap_Hypothesis.R`: tests for an effect of bad sleep in the previous night on more naptime during the next day
 
-Code 12: Exhaustion sleep hypotheis: creates a dataframe of travelled distance during the day and tests if that predicts sleep time.
+`12_Exhaustion_sleep_hypothesis.R`: creates a dataframe of travelled distance during the day and tests if that predicts sleep time.
