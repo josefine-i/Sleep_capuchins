@@ -2,10 +2,10 @@
 
 This repository includes all code needed to reproduce the results from my Bachelor's thesis: "Sleep ecology in capuchin monkeys (Cebus capucinus)"
 
-We calculated vedba (overall movement) from raw accelerometry data that is available for download from the project called “Food for thought” on Movebank. 
+We calculated vedba (overall movement) from raw accelerometry data that is available for download from the project called “Food for thought” on [Movebank](https://www.movebank.org/). 
 As is the GPS data.
 This research only includes data of the species "Cebus capucinus". 
-The weather data is provided by the Smithsonian Research Insitute on Barro Colorado Island in Panama and can be downloaded on their website.
+The weather data is provided by the Smithsonian Research Insitute on Barro Colorado Island in Panama and can be downloaded on their website: [Rain](https://smithsonian.figshare.com/articles/dataset/Barro_Colorado_Island_Clearing_Precipitation/10042463) and [Temperature](https://smithsonian.figshare.com/articles/dataset/Barro_Colorado_Island_Clearing_Air_Temperature/10042451).
 
 To reproduce the results, run the code in the numbered order, as following codes take in produced dataframes from previous codes.
   
