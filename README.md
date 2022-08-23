@@ -2,7 +2,7 @@
 
 This repository includes all code needed to reproduce the results from my Bachelor's thesis: "Sleep ecology in capuchin monkeys (Cebus capucinus)"
 
-We calculated VeDBA (vectorial dynamic body acceleration) from raw accelerometry data and classified sleep bouts. Therefore we adapted code from [Loftus et al.](https://github.com/CarterLoftus/baboon_sleep) from their research [Ecological and social pressures interfere with homeostatic sleep regulation in the wild](https://doi.org/10.7554/eLife.73695).
+We calculated VeDBA (vectorial dynamic body acceleration) from raw accelerometry data to classify sleep bouts. Therefore we adapted code from [Loftus et al.](https://github.com/CarterLoftus/baboon_sleep) from their research [Ecological and social pressures interfere with homeostatic sleep regulation in the wild](https://doi.org/10.7554/eLife.73695).
 
 Data is available for download from the project called “Food for thought” on [Movebank](https://www.movebank.org/). 
 As is the GPS data.
