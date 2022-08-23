@@ -4,12 +4,12 @@ This repository includes all code needed to reproduce the results from my Bachel
 
 We calculated vedba (overall movement) from raw accelerometry data that is available for download from the project called “Food for thought” on Movebank. 
 As is the GPS data.
-This includes only the species "Cebus capucinus". 
+This research only includes data of the species "Cebus capucinus". 
 The weather data is provided by the Smithsonian Research Insitute on Barro Colorado Island in Panama and can be downloaded on their website.
 
 To reproduce the results, run the code in the numbered order, as following codes take in produced dataframes from previous codes.
   
-Code 01: installing packages: installs all needed packages for the analysis
+01_installing_packages.R: installs all needed packages for the analysis
 
 Code 02: Download acc from movebank script: is downloading the data from movebank into R directly
 
