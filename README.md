@@ -9,7 +9,7 @@ The weather data is provided by the Smithsonian Research Insitute on Barro Color
 
 To reproduce the results, run the code in the numbered order, as following codes take in produced dataframes from previous codes.
   
-01_installing_packages.R: installs all needed packages for the analysis
+(/docs/01_installing_packages.R): installs all needed packages for the analysis
 
 Code 02: Download acc from movebank script: is downloading the data from movebank into R directly
 
